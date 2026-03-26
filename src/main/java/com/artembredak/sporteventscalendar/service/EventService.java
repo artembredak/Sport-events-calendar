@@ -4,6 +4,7 @@ import com.artembredak.sporteventscalendar.domain.model.Event;
 import com.artembredak.sporteventscalendar.domain.model.EventDetail;
 import com.artembredak.sporteventscalendar.domain.repository.EventRepository;
 import com.artembredak.sporteventscalendar.domain.usecase.EventUseCase;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,15 +13,13 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class EventService implements EventUseCase {
 
     private final EventRepository eventRepository;
 
-    public EventService(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
-    }
 
     @Override
     @Transactional(readOnly = true)
