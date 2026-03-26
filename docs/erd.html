@@ -52,40 +52,14 @@
       justify-content: center;
     }
 
-    .legend {
-      margin-top: 2rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      justify-content: center;
-    }
 
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.8rem;
-      color: #94a3b8;
-    }
 
-    .legend-item span.dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
 
-    .dot-pk   { background: #f59e0b; }
-    .dot-fk   { background: #60a5fa; }
-    .dot-nn   { background: #34d399; }
-    .dot-null { background: #6b7280; }
+
+
   </style>
 </head>
 <body>
-
-<header>
-  <h1>Entity-Relationship Diagram</h1>
-</header>
 
 <div class="card">
   <div class="mermaid">
@@ -101,7 +75,7 @@ erDiagram
         varchar_255 slug "NOT NULL, UNIQUE"
         varchar_255 name "NOT NULL"
         integer season "NOT NULL"
-        bigint _sport_id FK
+        bigint _sport_id FK "NOT NULL"
     }
 
     VENUE {
@@ -130,34 +104,33 @@ erDiagram
         date event_date "NOT NULL"
         time event_time "NOT NULL"
         varchar_50 status "NOT NULL | PLAYED|SCHEDULED|CANCELLED|POSTPONED"
-        bigint _competition_id FK
+        bigint _competition_id FK "NOT NULL"
         bigint _venue_id FK "nullable"
-        varchar_50 _stage_id FK
+        varchar_50 _stage_id FK "NOT NULL"
     }
 
     EVENT_TEAM {
-        bigint _event_id PK,FK
-        bigint _team_id PK,FK
+        bigint _event_id PK,FK "NOT NULL"
+        bigint _team_id PK,FK "NOT NULL"
         varchar_10 role "NOT NULL | HOME|AWAY"
     }
 
     EVENT_RESULT {
-        bigint _event_id PK,FK
+        bigint _event_id PK,FK "NOT NULL"
         integer home_goals "nullable"
         integer away_goals "nullable"
         varchar_255 winner "nullable"
     }
 
-    SPORT         ||--o{ COMPETITION  : "has"
-    COMPETITION   ||--o{ EVENT        : "schedules"
-    VENUE         |o--o{ EVENT        : "hosts"
-    STAGE         ||--o{ EVENT        : "groups"
-    EVENT         ||--o{ EVENT_TEAM   : "involves"
-    TEAM          ||--o{ EVENT_TEAM   : "participates in"
-    EVENT         ||--o| EVENT_RESULT : "has result"
+    SPORT         ||--|{ COMPETITION  : "has"
+    COMPETITION   ||--|{ EVENT        : "schedules"
+    VENUE         ||--|{ EVENT        : "hosts"
+    STAGE         ||--|{ EVENT        : "groups"
+    EVENT         ||--|{ EVENT_TEAM   : "involves"
+    TEAM          ||--|{ EVENT_TEAM   : "participates in"
+    EVENT         ||--|| EVENT_RESULT : "has result"
   </div>
 
-</div>
 
 <script>
   mermaid.initialize({

@@ -89,8 +89,6 @@ public class EventController {
         return ResponseEntity.created(location).body(toEventResponse(event));
     }
 
-    // private mapping helpers
-
     private EventDetailResponse toDetailResponse(EventDetail d) {
         return new EventDetailResponse(
                 d.id(),

@@ -1,6 +1,3 @@
--- ------------------------------------------------------------
--- 1. sport
--- ------------------------------------------------------------
 CREATE TABLE sport (
                        id   BIGSERIAL    PRIMARY KEY,
                        name VARCHAR(100) NOT NULL,
@@ -11,9 +8,7 @@ CREATE TABLE sport (
 COMMENT ON TABLE  sport      IS 'Sports categories (e.g. Football, Basketball)';
 COMMENT ON COLUMN sport.name IS 'Human-readable sport name, unique across the system';
 
--- ------------------------------------------------------------
--- 2. competition
--- ------------------------------------------------------------
+
 CREATE TABLE competition (
                              id        BIGSERIAL    PRIMARY KEY,
                              slug      VARCHAR(255) NOT NULL,
@@ -30,9 +25,7 @@ CREATE INDEX idx_competition_sport_id ON competition (_sport_id);
 COMMENT ON TABLE  competition           IS 'A competition season (e.g. AFC Champions League 2024)';
 COMMENT ON COLUMN competition._sport_id IS 'FK to sport.id — underscore prefix per ADR-005';
 
--- ------------------------------------------------------------
--- 3. venue
--- ------------------------------------------------------------
+
 CREATE TABLE venue (
                        id   BIGSERIAL    PRIMARY KEY,
                        name VARCHAR(255) NOT NULL,
@@ -41,9 +34,7 @@ CREATE TABLE venue (
 
 COMMENT ON TABLE venue IS 'Physical venues / stadiums where events take place';
 
--- ------------------------------------------------------------
--- 4. team
--- ------------------------------------------------------------
+
 CREATE TABLE team (
                       id            BIGSERIAL    PRIMARY KEY,
                       name          VARCHAR(255) NOT NULL,
@@ -60,9 +51,7 @@ COMMENT ON COLUMN team.slug         IS 'URL-safe unique identifier for the team'
 COMMENT ON COLUMN team.abbreviation IS 'Short 2-3 letter code used in display (e.g. SHA, HIL)';
 COMMENT ON COLUMN team.country_code IS 'ISO country code (e.g. KSA, UAE, JPN)';
 
--- ------------------------------------------------------------
--- 5. stage
--- ------------------------------------------------------------
+
 CREATE TABLE stage (
                        id       VARCHAR(50)  PRIMARY KEY,
                        name     VARCHAR(100) NOT NULL,
@@ -73,9 +62,7 @@ COMMENT ON TABLE  stage          IS 'Competition stages (e.g. ROUND_OF_16, FINAL
 COMMENT ON COLUMN stage.id       IS 'String PK used as a semantic identifier (e.g. ROUND_OF_16)';
 COMMENT ON COLUMN stage.ordering IS 'Ascending sort order across stages within a competition';
 
--- ------------------------------------------------------------
--- 6. event
--- ------------------------------------------------------------
+
 CREATE TABLE event (
                        id              BIGSERIAL   PRIMARY KEY,
                        event_date      DATE        NOT NULL,
@@ -100,9 +87,7 @@ COMMENT ON TABLE  event               IS 'A single match or fixture';
 COMMENT ON COLUMN event._venue_id     IS 'Nullable FK to venue.id — stadium may be unknown at scheduling time';
 COMMENT ON COLUMN event.status        IS 'Lifecycle status: PLAYED | SCHEDULED | CANCELLED | POSTPONED';
 
--- ------------------------------------------------------------
--- 7. event_team
--- ------------------------------------------------------------
+
 CREATE TABLE event_team (
                             _event_id BIGINT      NOT NULL,
                             _team_id  BIGINT      NOT NULL,
@@ -120,9 +105,7 @@ CREATE INDEX idx_event_team_team_id  ON event_team (_team_id);
 COMMENT ON TABLE  event_team      IS 'Junction table linking teams to events with HOME/AWAY role';
 COMMENT ON COLUMN event_team.role IS 'HOME or AWAY — one event may have no HOME team (e.g. FINAL venue TBD)';
 
--- ------------------------------------------------------------
--- 8. event_result
--- ------------------------------------------------------------
+
 CREATE TABLE event_result (
                               _event_id  BIGINT       NOT NULL,
                               home_goals INTEGER,

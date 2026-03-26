@@ -31,19 +31,11 @@ public class EventCalendarController {
     private final CompetitionUseCase competitionUseCase;
     private final StageJpaRepository stageJpaRepository;
 
-
-    // -------------------------------------------------------------------------
-    // Root redirect
-    // -------------------------------------------------------------------------
-
     @GetMapping("/")
     public String root() {
         return "redirect:/events";
     }
 
-    // -------------------------------------------------------------------------
-    // Events list
-    // -------------------------------------------------------------------------
 
     @GetMapping("/events")
     public String listEvents(
@@ -68,9 +60,6 @@ public class EventCalendarController {
         return "events/list";
     }
 
-    // -------------------------------------------------------------------------
-    // Event detail
-    // -------------------------------------------------------------------------
 
     @GetMapping("/events/{id}")
     public String eventDetail(@PathVariable Long id, Model model) {
@@ -80,9 +69,6 @@ public class EventCalendarController {
         return "events/detail";
     }
 
-    // -------------------------------------------------------------------------
-    // Add event form
-    // -------------------------------------------------------------------------
 
     @GetMapping("/events/new")
     public String newEventForm(Model model) {
@@ -98,9 +84,6 @@ public class EventCalendarController {
         return "events/form";
     }
 
-    // -------------------------------------------------------------------------
-    // Create event (form POST)
-    // -------------------------------------------------------------------------
 
     @PostMapping("/events")
     public String createEvent(
