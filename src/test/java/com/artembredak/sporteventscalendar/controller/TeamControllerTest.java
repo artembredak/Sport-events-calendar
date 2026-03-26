@@ -1,7 +1,8 @@
-package com.artembredak.sporteventscalendar.infrastructure.web.controller;
+package com.artembredak.sporteventscalendar.controller;
 
 import com.artembredak.sporteventscalendar.domain.model.Team;
 import com.artembredak.sporteventscalendar.domain.usecase.TeamUseCase;
+import com.artembredak.sporteventscalendar.infrastructure.web.controller.TeamController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
