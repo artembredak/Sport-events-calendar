@@ -1,0 +1,53 @@
+AI Reflection
+==============
+
+Tools I used
+----------
+Claude Code - specifically its subagent capabilities, which allow
+delegating focused tasks to specialised agents within a single session.
+
+How AI Was Used
+---------------
+
+1. Flyway Migrations
+   I designed the database schema myself: eight normalised tables, their
+   relationships, constraints, and indexes. Once the schema was clear in my
+   head, I used a Claude Code subagent to help me translate it into correct
+   Flyway SQL syntax — ensuring proper versioning conventions, FK constraint
+   naming, and that the seed data migration (V2) was consistent with the schema
+   defined in V1. The decisions about what to store and how to model the domain
+   were mine; the subagent helped me get the SQL right.
+
+2. Code Review - Clean Architecture Compliance
+   After implementing the hexagonal architecture (domain / service /
+   infrastructure split), I used a code review subagent to verify that the
+   layer boundaries were respected — for example, that domain records carried
+   no Spring or JPA annotations, and that repository adapters correctly
+   implemented the domain port interfaces. This acted as a second pair of eyes
+   and caught a few places where a dependency was leaking in the wrong
+   direction.
+
+3. Frontend (Thymeleaf Templates)
+   My primary stack is backend Java. I wrote the controller logic and decided
+   what data each view needed, but I relied on a frontend-focused subagent to
+   help me write correct Thymeleaf fragment syntax, Bootstrap grid markup, and
+   the filter form bindings. I reviewed every template and made sure I
+   understood what it produced, but I would not have written idiomatic
+   Thymeleaf as quickly on my own.
+
+4. README
+   I used a subagent to help structure and phrase the README clearly. The
+   content — architecture decisions, setup steps, schema diagram, API
+   reference — came from my own understanding of the project. The subagent
+   helped with wording and formatting.
+
+
+Using AI subagents noticeably accelerated the parts of the project that were
+outside my core strengths without replacing the thinking behind them. The
+architectural and design decisions remained my own, and I had to understand
+every piece of generated code well enough to integrate it, debug it, and defend it.
+
+The code review subagent was particularly useful not as an authority, but as a
+prompt to justify my own decisions — when it flagged something I disagreed
+with, I had to articulate why, which sharpened my understanding.
+
