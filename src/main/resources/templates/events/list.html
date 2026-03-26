@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Events | Sports Calendar</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <style>
+        html, body { height: 100%; }
+        body { background: #f0f2f5; display: flex; flex-direction: column; min-height: 100vh; }
+        main { flex: 1; }
+        .navbar-brand { font-weight: 700; letter-spacing: -.3px; }
+
+        /* Match card */
+        .match-card { border: none; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.08); transition: box-shadow .15s; }
+        .match-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.13); }
+        .match-card .card-header { border-radius: 12px 12px 0 0 !important; font-size: .8rem; }
+
+        /* Teams + score strip */
+        .match-body { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .5rem; padding: 1rem 1.25rem; }
+        .team-block { display: flex; flex-direction: column; align-items: center; gap: .3rem; }
+        .team-name  { font-weight: 600; font-size: .95rem; text-align: center; line-height: 1.2; }
+        .team-code  { font-size: .7rem; font-weight: 600; letter-spacing: .05em;
+            background: #e9ecef; color: #495057; border-radius: 4px; padding: 1px 5px; }
+        .score-box  { text-align: center; min-width: 64px; }
+        .score-num  { font-size: 1.6rem; font-weight: 800; line-height: 1; color: #212529; }
+        .score-vs   { font-size: .85rem; color: #6c757d; font-weight: 500; }
+        .score-sep  { font-size: 1.3rem; font-weight: 300; color: #adb5bd; margin: 0 2px; }
+
+        .badge-played    { background: #198754 !important; }
+        .badge-scheduled { background: #0d6efd !important; }
+
+        .filter-card { border: none; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+        .empty-state { padding: 3rem 1rem; color: #6c757d; }
+
+        footer { background: #212529; color: #adb5bd; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/events}">
+            <i class="bi bi-calendar-event-fill me-2 text-primary"></i>Sports Calendar
+        </a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/events}">
+                        <i class="bi bi-calendar3 me-1"></i>Events
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-4">
+
+    <!-- Flash messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show rounded-3" role="alert">
+        <i class="bi bi-check-circle me-2"></i><span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i><span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Header row -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h4 mb-0 fw-bold">
+            <i class="bi bi-calendar3 me-2 text-primary"></i>Events
+            <span th:if="${events != null and not #lists.isEmpty(events)}"
+                  class="badge bg-secondary ms-2 fw-normal fs-6"
+                  th:text="${#lists.size(events)}"></span>
+        </h1>
+        <a th:href="@{/events/new}" class="btn btn-success d-none d-lg-inline-flex align-items-center gap-1">
+            <i class="bi bi-plus-lg"></i>Add Event
+        </a>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="card filter-card mb-4">
+        <div class="card-body py-3">
+            <form method="get" th:action="@{/events}" class="row g-2 align-items-end" data-testid="filter-form">
+                <div class="col-sm-4 col-md-3">
+                    <label for="sportId" class="form-label small fw-semibold mb-1">Sport</label>
+                    <select id="sportId" name="sportId" class="form-select form-select-sm" data-testid="sport-filter">
+                        <option value="">All Sports</option>
+                        <option th:each="sport : ${sports}" th:value="${sport.id()}" th:text="${sport.name()}"
+                                th:selected="${selectedSportId != null and selectedSportId == sport.id()}"></option>
+                    </select>
+                </div>
+                <div class="col-sm-4 col-md-3">
+                    <label for="date" class="form-label small fw-semibold mb-1">Date</label>
+                    <input id="date" name="date" type="date" class="form-control form-control-sm"
+                           th:value="${selectedDate}" data-testid="date-filter"/>
+                </div>
+                <div class="col-auto d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm px-3" data-testid="filter-btn">
+                        <i class="bi bi-funnel me-1"></i>Filter
+                    </button>
+                    <a th:href="@{/events}" class="btn btn-outline-secondary btn-sm">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Events grid -->
+    <div th:if="${#lists.isEmpty(events)}" class="card filter-card">
+        <div class="empty-state text-center">
+            <i class="bi bi-calendar-x display-4 d-block mb-3 opacity-25"></i>
+            <p class="mb-0">No events found. Try clearing your filters or add a new event.</p>
+        </div>
+    </div>
+
+    <div class="row g-3" data-testid="events-table-container">
+        <div class="col-12 col-md-6 col-xl-4" th:each="event : ${events}" th:data-testid="'event-row-' + ${event.id()}">
+            <div class="card match-card h-100">
+
+                <!-- Card header: date · competition · stage -->
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-calendar3 opacity-50 small"></i>
+                        <span class="fw-semibold" th:text="${#temporals.format(event.eventDate(), 'dd MMM yyyy')}"></span>
+                        <span class="opacity-50">·</span>
+                        <span th:text="${#temporals.format(event.eventTime(), 'HH:mm')}"></span>
+                    </div>
+                    <span th:if="${event.status() == 'PLAYED'}"  class="badge badge-played" data-testid="status-badge">Played</span>
+                    <span th:if="${event.status() == 'SCHEDULED'}" class="badge badge-scheduled" data-testid="status-badge">Scheduled</span>
+                    <span th:if="${event.status() != 'PLAYED' and event.status() != 'SCHEDULED'}"
+                          class="badge bg-secondary" data-testid="status-badge" th:text="${event.status()}"></span>
+                </div>
+
+                <!-- Teams + score -->
+                <div class="match-body">
+                    <!-- Home team -->
+                    <div class="team-block" data-testid="home-team-cell">
+                        <th:block th:if="${event.homeTeam() != null}">
+                            <span class="team-name" th:text="${event.homeTeam().name()}"></span>
+                            <span class="team-code" th:if="${event.homeTeam().countryCode() != null}"
+                                  th:text="${event.homeTeam().countryCode()}"></span>
+                        </th:block>
+                        <span th:if="${event.homeTeam() == null}" class="text-muted fst-italic small">TBD</span>
+                    </div>
+
+                    <!-- Score: only show numbers for played matches -->
+                    <div class="score-box">
+                        <th:block th:if="${event.status() == 'PLAYED' and event.homeGoals() != null and event.awayGoals() != null}">
+                            <div class="d-flex align-items-baseline justify-content-center">
+                                <span class="score-num" th:text="${event.homeGoals()}" data-testid="score"></span>
+                                <span class="score-sep">–</span>
+                                <span class="score-num" th:text="${event.awayGoals()}"></span>
+                            </div>
+                        </th:block>
+                        <span th:if="${event.status() != 'PLAYED' or event.homeGoals() == null or event.awayGoals() == null}"
+                              class="score-vs" data-testid="no-score">vs</span>
+                    </div>
+
+                    <!-- Away team -->
+                    <div class="team-block" data-testid="away-team-cell">
+                        <th:block th:if="${event.awayTeam() != null}">
+                            <span class="team-name" th:text="${event.awayTeam().name()}"></span>
+                            <span class="team-code" th:if="${event.awayTeam().countryCode() != null}"
+                                  th:text="${event.awayTeam().countryCode()}"></span>
+                        </th:block>
+                        <span th:if="${event.awayTeam() == null}" class="text-muted fst-italic small">TBD</span>
+                    </div>
+                </div>
+
+                <!-- Card footer: competition · stage · venue · view button -->
+                <div class="card-footer bg-transparent pt-0 pb-3 px-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="d-flex flex-column gap-1">
+                        <small class="text-muted">
+                            <i class="bi bi-trophy me-1 opacity-50"></i>
+                            <span th:text="${event.competitionName()}"></span>
+                            <span class="opacity-50 ms-1" th:text="${event.season()}"></span>
+                        </small>
+                        <small class="text-muted">
+                            <i class="bi bi-flag me-1 opacity-50"></i>
+                            <span th:text="${event.stageName()}"></span>
+                            <th:block th:if="${event.venueName() != null}">
+                                <span class="opacity-50"> · </span>
+                                <span th:text="${event.venueName()}" data-testid="venue-cell"></span>
+                            </th:block>
+                        </small>
+                    </div>
+                    <a th:href="@{/events/{id}(id=${event.id()})}"
+                       class="btn btn-outline-primary btn-sm" data-testid="view-btn">
+                        <i class="bi bi-eye me-1"></i>Details
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer class="py-3 mt-5">
+    <div class="container text-center">
+        <small>Sports Event Calendar &mdash; AFC Champions League 2024</small>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmFXHqTjXJ/7KZ6Y/EFy9ys+qU" crossorigin="anonymous"></script>
+</body>
+</html>
