@@ -5,9 +5,15 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "event_result")
+@Getter
+@Setter
+@NoArgsConstructor
 public class EventResultEntity {
 
     @Id
@@ -23,17 +29,5 @@ public class EventResultEntity {
     @Column(name = "winner", length = 255)
     private String winner;
 
-    public EventResultEntity() {}
 
-    public Long getEventId() { return eventId; }
-    public void setEventId(Long eventId) { this.eventId = eventId; }
-
-    public Integer getHomeGoals() { return homeGoals; }
-    public void setHomeGoals(Integer homeGoals) { this.homeGoals = homeGoals; }
-
-    public Integer getAwayGoals() { return awayGoals; }
-    public void setAwayGoals(Integer awayGoals) { this.awayGoals = awayGoals; }
-
-    public String getWinner() { return winner; }
-    public void setWinner(String winner) { this.winner = winner; }
 }

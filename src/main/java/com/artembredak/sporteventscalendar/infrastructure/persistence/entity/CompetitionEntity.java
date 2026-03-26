@@ -1,9 +1,15 @@
 package com.artembredak.sporteventscalendar.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "competition")
+@Getter
+@Setter
+@NoArgsConstructor
 public class CompetitionEntity {
 
     @Id
@@ -23,20 +29,5 @@ public class CompetitionEntity {
     @Column(name = "_sport_id", nullable = false)
     private Long sportId;
 
-    public CompetitionEntity() {}
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getSlug() { return slug; }
-    public void setSlug(String slug) { this.slug = slug; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public int getSeason() { return season; }
-    public void setSeason(int season) { this.season = season; }
-
-    public Long getSportId() { return sportId; }
-    public void setSportId(Long sportId) { this.sportId = sportId; }
 }
