@@ -5,6 +5,7 @@ import com.artembredak.sporteventscalendar.infrastructure.web.dto.SportResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,16 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Tag(name = "Sports", description = "Sport types")
 @RestController
 @RequestMapping("/api/v1/sports")
 public class SportController {
 
     private final SportUseCase sportUseCase;
-
-    public SportController(SportUseCase sportUseCase) {
-        this.sportUseCase = sportUseCase;
-    }
 
     @Operation(summary = "List all sports")
     @ApiResponse(responseCode = "200", description = "List of sports")

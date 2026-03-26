@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,16 +23,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.time.LocalDate;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Tag(name = "Events", description = "Sports event management")
 @RestController
 @RequestMapping("/api/v1/events")
 public class EventController {
 
     private final EventUseCase eventUseCase;
-
-    public EventController(EventUseCase eventUseCase) {
-        this.eventUseCase = eventUseCase;
-    }
 
     @Operation(summary = "List events", description = "Returns all events. Optionally filter by sport or date. Uses a single JOIN query (no N+1).")
     @ApiResponse(responseCode = "200", description = "List of events")

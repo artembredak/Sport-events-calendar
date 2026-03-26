@@ -7,6 +7,7 @@ import com.artembredak.sporteventscalendar.domain.usecase.EventUseCase;
 import com.artembredak.sporteventscalendar.domain.usecase.SportUseCase;
 import com.artembredak.sporteventscalendar.domain.usecase.TeamUseCase;
 import com.artembredak.sporteventscalendar.infrastructure.persistence.repository.StageJpaRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Controller
 public class EventCalendarController {
 
@@ -29,18 +31,6 @@ public class EventCalendarController {
     private final CompetitionUseCase competitionUseCase;
     private final StageJpaRepository stageJpaRepository;
 
-    public EventCalendarController(
-            EventUseCase eventUseCase,
-            SportUseCase sportUseCase,
-            TeamUseCase teamUseCase,
-            CompetitionUseCase competitionUseCase,
-            StageJpaRepository stageJpaRepository) {
-        this.eventUseCase = eventUseCase;
-        this.sportUseCase = sportUseCase;
-        this.teamUseCase = teamUseCase;
-        this.competitionUseCase = competitionUseCase;
-        this.stageJpaRepository = stageJpaRepository;
-    }
 
     // -------------------------------------------------------------------------
     // Root redirect
