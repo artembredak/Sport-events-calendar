@@ -29,60 +29,41 @@ Seed data includes AFC Champions League 2024 fixtures to demonstrate the applica
 
 ## Prerequisites
 
-- Java 17+
-- PostgreSQL running on `localhost:5433`
-- Maven (or use the included `./mvnw` wrapper)
-
-## Database Setup
-
-Create the database and user before starting the application:
-
-```sql
-CREATE DATABASE sport_events;
-```
-
-The application connects with:
-
-```
-host:     localhost
-port:     5433
-database: sport_events
-user:     postgres
-```
-
-> If your PostgreSQL instance uses a different port, host, or credentials, update `src/main/resources/application.properties` accordingly.
-
-Database schema and seed data are applied automatically on startup via Flyway migrations:
-
-- `V1__create_schema.sql` — creates all tables
-- `V2__seed_data.sql` — inserts sample AFC Champions League 2024 data
+- Docker
 
 ## Running the Application
 
 ```bash
-# Clone the repository
 git clone <repo-url>
 cd sport-events-calendar
-
-# Build and run
-./mvnw spring-boot:run
+docker-compose up --build
 ```
 
-The application starts on **http://localhost:8080**.
+This starts two containers:
 
-On Windows use `mvnw.cmd spring-boot:run`.
+| Service | Port |
+|---|---|
+| PostgreSQL 16 | `localhost:5433` |
+| Application | `http://localhost:8080` |
+
+The application waits for the database to pass its health check before starting. Database schema and seed data are applied automatically via Flyway on first boot.
+
+To stop and remove containers:
+
+```bash
+docker-compose down
+```
 
 ## Running Tests
 
 ```bash
-# Unit tests only
+# Unit tests only (Mockito, no database required)
 ./mvnw test
-
-# Unit + integration tests (requires Docker for TestContainers)
-./mvnw verify
 ```
 
-Integration tests spin up an isolated PostgreSQL container via TestContainers — no manual database setup is needed for them.
+All current tests are unit tests that use Mockito to mock dependencies — no database or Docker is needed to run them.
+
+TestContainers and the Failsafe plugin are already configured in `pom.xml` for future integration tests. Any test class named `*IT.java` will be picked up by `./mvnw verify` and can use a real PostgreSQL container via TestContainers.
 
 ## Application URLs
 
@@ -126,6 +107,11 @@ src/main/resources/
 └── templates/
     ├── layout/base.html     # Shared layout (navbar, footer)
     └── events/              # list.html, detail.html, form.html
+
+src/test/java/com/artembredak/sporteventscalendar/
+├── SportEventsCalendarApplicationTests.java
+├── controller/              # Unit tests for all controllers (Mockito)
+└── service/                 # Unit tests for service layer (Mockito)
 ```
 
 ## API Reference
@@ -190,6 +176,6 @@ All domain objects are immutable Java records. This enforces that the domain lay
 
 A `V2__seed_data.sql` migration seeds the database with real AFC Champions League 2024 fixtures so the application is immediately usable and demonstrable without manual data entry.
 
-### Mockito unit tests
+### Mockito Unit Tests
 
-Unit tests are implemented using Mockito to isolate the service layer and verify business logic independently of the database. Repository dependencies are mocked, allowing fast and deterministic tests that validate behavior, interactions, and error handling.
+Unit tests cover both the controller and service layers using Mockito. All use cases / repositories are mocked so tests run without a database and finish in milliseconds. Test classes live in a flattened `controller/` and `service/` package directly under the test root, mirroring the source structure without the `infrastructure.web` prefix.
