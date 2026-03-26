@@ -30,14 +30,11 @@ class SportServiceTest {
     @Test
     @DisplayName("getAllSports_returnsAll: delegates to repository and returns all sports")
     void getAllSports_returnsAll() {
-        // GIVEN
         List<Sport> expected = List.of(new Sport(1L, "Football"), new Sport(2L, "Basketball"));
         given(sportRepository.findAll()).willReturn(expected);
 
-        // WHEN
         List<Sport> result = sportService.findAll();
 
-        // THEN
         assertThat(result).hasSize(2).isEqualTo(expected);
         then(sportRepository).should().findAll();
     }
@@ -45,14 +42,11 @@ class SportServiceTest {
     @Test
     @DisplayName("getSportById_found: returns Optional containing the sport when it exists")
     void getSportById_found() {
-        // GIVEN
         Sport sport = new Sport(1L, "Football");
         given(sportRepository.findById(1L)).willReturn(Optional.of(sport));
 
-        // WHEN
         Optional<Sport> result = sportService.findById(1L);
 
-        // THEN
         assertThat(result).isPresent().contains(sport);
         then(sportRepository).should().findById(1L);
     }
@@ -60,13 +54,10 @@ class SportServiceTest {
     @Test
     @DisplayName("getSportById_notFound_throwsException: returns empty Optional when sport does not exist")
     void getSportById_notFound_returnsEmpty() {
-        // GIVEN
         given(sportRepository.findById(99L)).willReturn(Optional.empty());
 
-        // WHEN
         Optional<Sport> result = sportService.findById(99L);
 
-        // THEN
         assertThat(result).isEmpty();
         then(sportRepository).should().findById(99L);
     }

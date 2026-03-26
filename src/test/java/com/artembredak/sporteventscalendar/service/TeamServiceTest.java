@@ -34,14 +34,11 @@ class TeamServiceTest {
     @Test
     @DisplayName("getAllTeams_returnsAll: delegates to repository and returns all teams")
     void getAllTeams_returnsAll() {
-        // GIVEN
         List<Team> expected = List.of(makeTeam(1L, "Al Hilal"), makeTeam(2L, "Al Shabab"));
         given(teamRepository.findAll()).willReturn(expected);
 
-        // WHEN
         List<Team> result = teamService.findAll();
 
-        // THEN
         assertThat(result).hasSize(2).isEqualTo(expected);
         then(teamRepository).should().findAll();
     }
@@ -49,14 +46,11 @@ class TeamServiceTest {
     @Test
     @DisplayName("getTeamById_found: returns Optional containing the team when it exists")
     void getTeamById_found() {
-        // GIVEN
         Team team = makeTeam(1L, "Al Hilal");
         given(teamRepository.findById(1L)).willReturn(Optional.of(team));
 
-        // WHEN
         Optional<Team> result = teamService.findById(1L);
 
-        // THEN
         assertThat(result).isPresent().contains(team);
         then(teamRepository).should().findById(1L);
     }

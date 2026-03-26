@@ -34,7 +34,6 @@ class EventServiceTest {
     @InjectMocks
     EventService eventService;
 
-    // --- fixtures ---
 
     private static EventDetail makeDetail(long id) {
         return new EventDetail(
@@ -63,19 +62,14 @@ class EventServiceTest {
                 "scheduled", 1L, null, "ROUND_OF_16");
     }
 
-    // --- tests ---
-
     @Test
     @DisplayName("getAllEvents_returnsListFromRepository: delegates to findAllWithDetail and returns same list")
     void getAllEvents_returnsListFromRepository() {
-        // GIVEN
         List<EventDetail> expected = List.of(makeDetail(1L), makeDetail(2L));
         given(eventRepository.findAllWithDetail()).willReturn(expected);
 
-        // WHEN
         List<EventDetail> result = eventService.findAllEvents();
 
-        // THEN
         assertThat(result).isEqualTo(expected);
         then(eventRepository).should().findAllWithDetail();
     }
@@ -83,14 +77,11 @@ class EventServiceTest {
     @Test
     @DisplayName("getEventById_existingId_returnsEventDetail: returns the Optional value when present")
     void getEventById_existingId_returnsEventDetail() {
-        // GIVEN
         EventDetail detail = makeDetail(5L);
         given(eventRepository.findDetailById(5L)).willReturn(Optional.of(detail));
 
-        // WHEN
         Optional<EventDetail> result = eventService.findEventById(5L);
 
-        // THEN
         assertThat(result).isPresent().contains(detail);
         then(eventRepository).should().findDetailById(5L);
     }
@@ -98,20 +89,16 @@ class EventServiceTest {
     @Test
     @DisplayName("getEventById_unknownId_throwsException: service returns empty Optional for unknown id")
     void getEventById_unknownId_returnsEmpty() {
-        // GIVEN
         given(eventRepository.findDetailById(999L)).willReturn(Optional.empty());
 
-        // WHEN
         Optional<EventDetail> result = eventService.findEventById(999L);
 
-        // THEN
         assertThat(result).isEmpty();
     }
 
     @Test
     @DisplayName("createEvent_validData_persistsAndReturnsId: saves event and registers teams, returns saved event id")
     void createEvent_validData_persistsAndReturnsId() {
-        // GIVEN
         given(eventRepository.competitionExists(1L)).willReturn(true);
         given(eventRepository.stageExists("ROUND_OF_16")).willReturn(true);
         given(eventRepository.teamExists(10L)).willReturn(true);
@@ -119,7 +106,6 @@ class EventServiceTest {
         Event saved = makeSavedEvent(42L);
         given(eventRepository.save(any(Event.class))).willReturn(saved);
 
-        // WHEN
         Event result = eventService.createEvent(
                 LocalDate.of(2024, 1, 3),
                 "16:00",
@@ -131,7 +117,6 @@ class EventServiceTest {
                 20L
         );
 
-        // THEN
         assertThat(result.id()).isEqualTo(42L);
         then(eventRepository).should().save(any(Event.class));
         then(eventRepository).should().saveEventTeam(42L, 10L, "HOME");
@@ -141,10 +126,8 @@ class EventServiceTest {
     @Test
     @DisplayName("createEvent_unknownCompetitionId_throwsException: throws IllegalArgumentException containing competition id")
     void createEvent_unknownCompetitionId_throwsException() {
-        // GIVEN
         given(eventRepository.competitionExists(999L)).willReturn(false);
 
-        // WHEN / THEN
         assertThatThrownBy(() -> eventService.createEvent(
                 LocalDate.of(2024, 1, 3), "16:00", "scheduled",
                 999L, null, "ROUND_OF_16", null, null))
@@ -157,11 +140,9 @@ class EventServiceTest {
     @Test
     @DisplayName("createEvent_unknownStageId_throwsException: throws IllegalArgumentException containing stage id")
     void createEvent_unknownStageId_throwsException() {
-        // GIVEN
         given(eventRepository.competitionExists(1L)).willReturn(true);
         given(eventRepository.stageExists("UNKNOWN_STAGE")).willReturn(false);
 
-        // WHEN / THEN
         assertThatThrownBy(() -> eventService.createEvent(
                 LocalDate.of(2024, 1, 3), "16:00", "scheduled",
                 1L, null, "UNKNOWN_STAGE", null, null))
@@ -174,12 +155,10 @@ class EventServiceTest {
     @Test
     @DisplayName("createEvent_unknownHomeTeamId_throwsException: throws IllegalArgumentException when homeTeamId not found")
     void createEvent_unknownHomeTeamId_throwsException() {
-        // GIVEN
         given(eventRepository.competitionExists(1L)).willReturn(true);
         given(eventRepository.stageExists("ROUND_OF_16")).willReturn(true);
         given(eventRepository.teamExists(999L)).willReturn(false);
 
-        // WHEN / THEN
         assertThatThrownBy(() -> eventService.createEvent(
                 LocalDate.of(2024, 1, 3), "16:00", "scheduled",
                 1L, null, "ROUND_OF_16", 999L, null))
@@ -192,28 +171,22 @@ class EventServiceTest {
     @Test
     @DisplayName("getAllEvents_emptyRepository_returnsEmptyList: returns empty list gracefully when no events exist")
     void getAllEvents_emptyRepository_returnsEmptyList() {
-        // GIVEN
         given(eventRepository.findAllWithDetail()).willReturn(List.of());
 
-        // WHEN
         List<EventDetail> result = eventService.findAllEvents();
 
-        // THEN
         assertThat(result).isEmpty();
     }
 
     @Test
     @DisplayName("getEventsByDate_returnsFilteredList: delegates to findAllWithDetailByDate and returns filtered list")
     void getEventsByDate_returnsFilteredList() {
-        // GIVEN
         LocalDate date = LocalDate.of(2024, 1, 3);
         List<EventDetail> expected = List.of(makeDetail(1L));
         given(eventRepository.findAllWithDetailByDate(date)).willReturn(expected);
 
-        // WHEN
         List<EventDetail> result = eventService.findEventsByDate(date);
 
-        // THEN
         assertThat(result).isEqualTo(expected);
         then(eventRepository).should().findAllWithDetailByDate(date);
     }
@@ -221,14 +194,11 @@ class EventServiceTest {
     @Test
     @DisplayName("getEventsBySportId_returnsFilteredList: delegates to findAllWithDetailBySportId and returns filtered list")
     void getEventsBySportId_returnsFilteredList() {
-        // GIVEN
         List<EventDetail> expected = List.of(makeDetail(3L));
         given(eventRepository.findAllWithDetailBySportId(7L)).willReturn(expected);
 
-        // WHEN
         List<EventDetail> result = eventService.findEventsBySportId(7L);
 
-        // THEN
         assertThat(result).isEqualTo(expected);
         then(eventRepository).should().findAllWithDetailBySportId(7L);
     }
