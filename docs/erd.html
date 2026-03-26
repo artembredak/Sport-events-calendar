@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entity-Relationship Diagram</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #f8fafc;
+    }
+
+    header p {
+      margin-top: 0.4rem;
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+
+    .card {
+      background: #1e2130;
+      border: 1px solid #2d3148;
+      border-radius: 12px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 1100px;
+      overflow-x: auto;
+    }
+
+    .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+
+    .legend {
+      margin-top: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    .legend-item span.dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-pk   { background: #f59e0b; }
+    .dot-fk   { background: #60a5fa; }
+    .dot-nn   { background: #34d399; }
+    .dot-null { background: #6b7280; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Entity-Relationship Diagram</h1>
+</header>
+
+<div class="card">
+  <div class="mermaid">
+erDiagram
+
+    SPORT {
+        bigserial id PK
+        varchar_100 name "NOT NULL, UNIQUE"
+    }
+
+    COMPETITION {
+        bigserial id PK
+        varchar_255 slug "NOT NULL, UNIQUE"
+        varchar_255 name "NOT NULL"
+        integer season "NOT NULL"
+        bigint _sport_id FK
+    }
+
+    VENUE {
+        bigserial id PK
+        varchar_255 name "NOT NULL"
+        varchar_100 city "nullable"
+    }
+
+    TEAM {
+        bigserial id PK
+        varchar_255 name "NOT NULL"
+        varchar_255 official_name "nullable"
+        varchar_255 slug "UNIQUE, nullable"
+        varchar_10 abbreviation "nullable"
+        varchar_10 country_code "nullable"
+    }
+
+    STAGE {
+        varchar_50 id PK
+        varchar_100 name "NOT NULL"
+        integer ordering "NOT NULL"
+    }
+
+    EVENT {
+        bigserial id PK
+        date event_date "NOT NULL"
+        time event_time "NOT NULL"
+        varchar_50 status "NOT NULL | PLAYED|SCHEDULED|CANCELLED|POSTPONED"
+        bigint _competition_id FK
+        bigint _venue_id FK "nullable"
+        varchar_50 _stage_id FK
+    }
+
+    EVENT_TEAM {
+        bigint _event_id PK,FK
+        bigint _team_id PK,FK
+        varchar_10 role "NOT NULL | HOME|AWAY"
+    }
+
+    EVENT_RESULT {
+        bigint _event_id PK,FK
+        integer home_goals "nullable"
+        integer away_goals "nullable"
+        varchar_255 winner "nullable"
+    }
+
+    SPORT         ||--o{ COMPETITION  : "has"
+    COMPETITION   ||--o{ EVENT        : "schedules"
+    VENUE         |o--o{ EVENT        : "hosts"
+    STAGE         ||--o{ EVENT        : "groups"
+    EVENT         ||--o{ EVENT_TEAM   : "involves"
+    TEAM          ||--o{ EVENT_TEAM   : "participates in"
+    EVENT         ||--o| EVENT_RESULT : "has result"
+  </div>
+
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: "dark",
+    er: {
+      diagramPadding: 30,
+      layoutDirection: "TB",
+      minEntityWidth: 100,
+      minEntityHeight: 75,
+      entityPadding: 15,
+      useMaxWidth: true
+    }
+  });
+</script>
+
+</body>
+</html>
