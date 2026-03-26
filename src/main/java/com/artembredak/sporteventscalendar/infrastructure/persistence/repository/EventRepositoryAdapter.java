@@ -5,14 +5,17 @@ import com.artembredak.sporteventscalendar.domain.model.EventDetail;
 import com.artembredak.sporteventscalendar.domain.repository.EventRepository;
 import com.artembredak.sporteventscalendar.infrastructure.persistence.entity.EventEntity;
 import com.artembredak.sporteventscalendar.infrastructure.persistence.entity.EventTeamEntity;
+import com.artembredak.sporteventscalendar.infrastructure.persistence.entity.EventTeamId;
 import com.artembredak.sporteventscalendar.infrastructure.persistence.mapper.EventDetailRowMapper;
 import com.artembredak.sporteventscalendar.infrastructure.persistence.mapper.EventMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Repository
 public class EventRepositoryAdapter implements EventRepository {
 
@@ -25,24 +28,6 @@ public class EventRepositoryAdapter implements EventRepository {
     private final EventMapper eventMapper;
     private final EventDetailRowMapper rowMapper;
 
-    public EventRepositoryAdapter(
-            EventJpaRepository eventJpa,
-            EventTeamJpaRepository eventTeamJpa,
-            CompetitionJpaRepository competitionJpa,
-            VenueJpaRepository venueJpa,
-            StageJpaRepository stageJpa,
-            TeamJpaRepository teamJpa,
-            EventMapper eventMapper,
-            EventDetailRowMapper rowMapper) {
-        this.eventJpa = eventJpa;
-        this.eventTeamJpa = eventTeamJpa;
-        this.competitionJpa = competitionJpa;
-        this.venueJpa = venueJpa;
-        this.stageJpa = stageJpa;
-        this.teamJpa = teamJpa;
-        this.eventMapper = eventMapper;
-        this.rowMapper = rowMapper;
-    }
 
     @Override
     public List<EventDetail> findAllWithDetail() {
@@ -75,7 +60,10 @@ public class EventRepositoryAdapter implements EventRepository {
 
     @Override
     public void saveEventTeam(Long eventId, Long teamId, String role) {
-        eventTeamJpa.save(new EventTeamEntity(eventId, teamId, role));
+        EventTeamEntity entity = new EventTeamEntity();
+        entity.setId(new EventTeamId(eventId, teamId));
+        entity.setRole(role);
+        eventTeamJpa.save(entity);
     }
 
     @Override

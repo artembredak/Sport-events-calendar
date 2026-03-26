@@ -1,7 +1,3 @@
--- Creates all 8 tables for the sport events calendar schema (3NF normalised).
--- Table order respects FK dependencies:
--- sport -> competition -> venue -> team -> stage -> event -> event_team -> event_result
-
 -- ------------------------------------------------------------
 -- 1. sport
 -- ------------------------------------------------------------

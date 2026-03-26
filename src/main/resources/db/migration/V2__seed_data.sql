@@ -1,7 +1,3 @@
--- Seeds AFC Champions League 2024 reference data.
--- All _venue_id values are NULL (stadiums unknown in source data).
--- Event 5 (FINAL) has no HOME team and no result row — handled gracefully.
-
 -- ------------------------------------------------------------
 -- Sport
 -- ------------------------------------------------------------
@@ -39,7 +35,6 @@ SELECT setval(pg_get_serial_sequence('team', 'id'), 9, true);
 
 -- ------------------------------------------------------------
 -- Events
--- All _venue_id = NULL (stadiums not provided in source data)
 -- ------------------------------------------------------------
 INSERT INTO event (id, event_date, event_time, status, _competition_id, _venue_id, _stage_id) VALUES
                                                                                                   (1, '2024-01-03', '00:00:00', 'PLAYED',    1, NULL, 'ROUND_OF_16'),
@@ -51,7 +46,6 @@ SELECT setval(pg_get_serial_sequence('event', 'id'), 5, true);
 
 -- ------------------------------------------------------------
 -- Event teams
--- Event 5 (FINAL): only AWAY team (Urawa Reds) — no HOME team per source data
 -- ------------------------------------------------------------
 INSERT INTO event_team (_event_id, _team_id, role) VALUES
                                                        -- Event 1: Al Shabab (HOME) vs Nasaf (AWAY)
@@ -71,13 +65,11 @@ INSERT INTO event_team (_event_id, _team_id, role) VALUES
 
 -- ------------------------------------------------------------
 -- Event results
--- Only event 1 is PLAYED and has a result row.
--- Events 2-4 are SCHEDULED with 0-0 score rows (data present in source, no winner).
--- Event 5 has no result row — intentionally omitted per source data.
 -- ------------------------------------------------------------
 INSERT INTO event_result (_event_id, home_goals, away_goals, winner) VALUES
                                                                          (1, 1, 2, 'Nasaf'),
                                                                          (2, 0, 0, NULL),
                                                                          (3, 0, 0, NULL),
                                                                          (4, 0, 0, NULL);
--- No row inserted for event 5 (FINAL, result=null in source)
+
+

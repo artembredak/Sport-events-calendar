@@ -10,8 +10,6 @@ import java.util.List;
 
 public interface EventJpaRepository extends JpaRepository<EventEntity, Long> {
 
-    // Two self-joins on event_team differentiate HOME vs AWAY teams.
-    // All venue, result, home-team joins are LEFT JOIN to handle nullable data gracefully.
     String EVENT_DETAIL_SELECT = """
             SELECT
                 e.id               AS event_id,

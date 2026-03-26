@@ -3,21 +3,19 @@ package com.artembredak.sporteventscalendar.infrastructure.persistence.repositor
 import com.artembredak.sporteventscalendar.domain.model.Team;
 import com.artembredak.sporteventscalendar.domain.repository.TeamRepository;
 import com.artembredak.sporteventscalendar.infrastructure.persistence.mapper.TeamMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Repository
 public class TeamRepositoryAdapter implements TeamRepository {
 
     private final TeamJpaRepository jpa;
     private final TeamMapper mapper;
 
-    public TeamRepositoryAdapter(TeamJpaRepository jpa, TeamMapper mapper) {
-        this.jpa = jpa;
-        this.mapper = mapper;
-    }
 
     @Override
     public List<Team> findAll() {
